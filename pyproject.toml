@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "system-stats-log"
 version = "0.1.0"
-description = ""
+description = "logs system statistics into a TSV file"
 authors = ["Daniel Komesu <danielkomesu@gmail.com>"]
 
 [tool.poetry.dependencies]
