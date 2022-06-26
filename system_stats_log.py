@@ -10,8 +10,12 @@ from typing import Any
 import psutil
 from pythonping import ping
 
-
 OS = platform.system()
+
+if OS == "Windows":
+    import wmi
+
+
 CSV_HEADER = (
     "timestamp",
     "ram_usage_pct",
@@ -24,15 +28,22 @@ CSV_HEADER = (
 )
 
 
+def get_cpu_temp():
+    cpu_temp = None
+    if OS == "Windows":
+        w = wmi.WMI(namespace="root\OpenHardwareMonitor")
+        cpu_temp = w.Sensor()[-1].Value
+    else:
+        cpu_temp = psutil.sensors_temperatures()["cpu_thermal"][0].current
+    return cpu_temp
+
+
 def get_stats():
     timestamp = time.time()
     ram_usage_pct = psutil.virtual_memory().percent
     cpu_usage_pct = psutil.cpu_percent(interval=1.0)
     cpu_freq = psutil.cpu_freq().current
-    if OS == "Windows":
-        cpu_temp = ""
-    else:
-        cpu_temp = psutil.sensors_temperatures()["cpu_thermal"][0].current
+    cpu_temp = get_cpu_temp()
     net_stats = psutil.net_io_counters()
     net_bytes_sent = net_stats.bytes_sent
     net_bytes_recv = net_stats.bytes_recv
